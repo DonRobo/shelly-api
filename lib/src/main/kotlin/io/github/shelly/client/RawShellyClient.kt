@@ -14,7 +14,7 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import kotlin.time.measureTime
 
-class ShellyClient(
+class RawShellyClient(
     private val host: String,
 ) {
 
@@ -73,7 +73,7 @@ class ShellyClient(
 }
 
 suspend fun main() {
-    val shelly = ShellyClient("192.168.178.48")
+    val shelly = RawShellyClient("192.168.178.48")
     measureTime {
         val response = shelly.call(Shelly.GetStatus)
         response.forEach {

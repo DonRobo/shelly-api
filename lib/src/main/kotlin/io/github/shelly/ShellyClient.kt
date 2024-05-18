@@ -2,14 +2,18 @@ package io.github.shelly
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import io.github.shelly.client.ShellyClient
+import io.github.shelly.client.RawShellyClient
 import io.github.shelly.client.component.Shelly
 
-class Shelly(
+class ShellyClient(
     ip: String,
 ) {
 
-    private val client = ShellyClient(ip)
+    private val client = RawShellyClient(ip)
+
+    suspend fun getName(): String {
+        TODO()
+    }
 
     suspend fun getWifiStatus(): WifiStatus {
         val status = client.call(Shelly.GetStatus)
@@ -29,9 +33,28 @@ class Shelly(
             )
         }.toList()
     }
+
+    suspend fun getSwitches(): List<ShellySwitch> {
+        val status = client.call(Shelly.GetStatus)
+
+        return status.fieldNames().asSequence().filter {
+            it.startsWith("switch:")
+        }.map {
+            val input = status[it]
+            ShellySwitch(
+                id = input["id"].asInt(),
+                state = input["state"].asBoolean(),
+            )
+        }.toList()
+    }
 }
 
 data class ShellyInput(
+    val id: Int,
+    val state: Boolean,
+)
+
+data class ShellySwitch(
     val id: Int,
     val state: Boolean,
 )
@@ -45,7 +68,7 @@ data class WifiStatus(
 )
 
 suspend fun main() {
-    val shelly = Shelly("192.168.178.48")
+    val shelly = ShellyClient("192.168.178.48")
     val wifiStatus = shelly.getWifiStatus()
     println(wifiStatus)
     val inputs = shelly.getInputs()
