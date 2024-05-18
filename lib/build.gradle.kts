@@ -4,7 +4,11 @@ plugins {
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+
+    `maven-publish`
 }
+
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -19,7 +23,6 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.jackson.kotlin)
     implementation(libs.bundles.ktor.client)
-    implementation("io.ktor:ktor-client-java:2.3.11")
 }
 
 testing {
@@ -35,5 +38,17 @@ testing {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "io.github.shelly-api"
+            artifactId = "shelly-api"
+            version = project.version.toString()
+
+            from(components["java"])
+        }
     }
 }
