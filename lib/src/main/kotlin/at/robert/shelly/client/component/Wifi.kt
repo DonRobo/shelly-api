@@ -3,11 +3,9 @@ package at.robert.shelly.client.component
 import at.robert.shelly.client.method
 import com.fasterxml.jackson.databind.node.ObjectNode
 
-object Shelly {
-    const val COMPONENT = "Shelly"
+object Wifi {
+    const val COMPONENT = "Wifi"
 
     val GetStatus = method<ObjectNode>(COMPONENT, "GetStatus")
-    val ListMethods = method<ObjectNode>(COMPONENT, "ListMethods")
-    val GetComponents = method<ObjectNode>(COMPONENT, "GetComponents")
+    val GetConfig = method<ObjectNode>(COMPONENT, "GetConfig")
 }
-
