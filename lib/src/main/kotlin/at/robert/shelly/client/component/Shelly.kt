@@ -7,5 +7,6 @@ object Shelly {
     const val COMPONENT = "Shelly"
 
     val GetStatus = method<ObjectNode>(COMPONENT, "GetStatus")
+    val ListMethods = method<ObjectNode>(COMPONENT, "ListMethods")
 }
 

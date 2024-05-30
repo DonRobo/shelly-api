@@ -2,7 +2,10 @@ package at.robert.shelly
 
 import at.robert.shelly.client.RawShellyClient
 import at.robert.shelly.client.component.Shelly
+import at.robert.shelly.client.component.Switch
+import at.robert.shelly.client.schema.IdParam
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 
 class ShellyClient(
@@ -40,12 +43,19 @@ class ShellyClient(
         return status.fieldNames().asSequence().filter {
             it.startsWith("switch:")
         }.map {
-            val input = status[it]
-            ShellySwitch(
-                id = input["id"].asInt(),
-                state = input["state"].asBoolean(),
-            )
+            val switch = status[it]
+            client.objectMapper.treeToValue<ShellySwitch>(switch)
         }.toList()
+    }
+
+    suspend fun getMethods(): List<String> {
+        return client.call(Shelly.ListMethods)["methods"].map {
+            it.asText()
+        }
+    }
+
+    suspend fun toggleSwitch(switchIndex: Int): ObjectNode {
+        return client.call(Switch.Toggle, IdParam(switchIndex))
     }
 }
 
@@ -54,9 +64,18 @@ data class ShellyInput(
     val state: Boolean,
 )
 
+data class ShellyTemperature(
+    @JsonProperty("tC")
+    val celsius: Double,
+    @JsonProperty("tF")
+    val fahrenheit: Double,
+)
+
 data class ShellySwitch(
     val id: Int,
-    val state: Boolean,
+    val source: String,
+    val output: Boolean,
+    val temperature: ShellyTemperature,
 )
 
 data class WifiStatus(
@@ -73,4 +92,11 @@ suspend fun main() {
     println(wifiStatus)
     val inputs = shelly.getInputs()
     println(inputs)
+    val switches = shelly.getSwitches()
+    println(switches)
+    println(shelly.toggleSwitch(0))
+    val methods: List<String> = shelly.getMethods()
+    methods.sorted().forEach {
+        println(it)
+    }
 }

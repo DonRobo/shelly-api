@@ -67,7 +67,21 @@ class RawShellyClient(
             TODO("Handle ${response.error}")
         } else {
             requireNotNull(response.result)
-            return objectMapper.treeToValue(response.result, method.response.java)
+            return objectMapper.treeToValue(response.result, method.response)
+        }
+    }
+
+    suspend fun <Req : Any, Resp : Any> call(method: MethodWithRequestBody<Req, Resp>, body: Req): Resp {
+        val response = executeCall(
+            m = method.component + "." + method.method,
+            params = body
+        )
+
+        if (response.error != null) {
+            TODO("Handle ${response.error}")
+        } else {
+            requireNotNull(response.result)
+            return objectMapper.treeToValue(response.result, method.response)
         }
     }
 }
