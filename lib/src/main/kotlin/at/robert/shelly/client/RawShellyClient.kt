@@ -1,10 +1,10 @@
-package io.github.shelly.client
+package at.robert.shelly.client
 
+import at.robert.shelly.client.component.Shelly
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.github.shelly.client.component.Shelly
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.java.*

@@ -1,4 +1,4 @@
-package io.github.shelly.client
+package at.robert.shelly.client
 
 import kotlin.reflect.KClass
 

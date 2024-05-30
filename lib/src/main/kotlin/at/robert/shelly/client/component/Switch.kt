@@ -1,7 +1,7 @@
-package io.github.shelly.client.component
+package at.robert.shelly.client.component
 
+import at.robert.shelly.client.methodWithRequestBody
 import com.fasterxml.jackson.databind.node.ObjectNode
-import io.github.shelly.client.methodWithRequestBody
 
 object Switch {
     const val COMPONENT = "Switch"

@@ -1,7 +1,7 @@
-package io.github.shelly.client.component
+package at.robert.shelly.client.component
 
+import at.robert.shelly.client.method
 import com.fasterxml.jackson.databind.node.ObjectNode
-import io.github.shelly.client.method
 
 object Shelly {
     const val COMPONENT = "Shelly"

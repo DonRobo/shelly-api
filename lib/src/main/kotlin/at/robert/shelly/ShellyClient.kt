@@ -1,9 +1,9 @@
-package io.github.shelly
+package at.robert.shelly
 
+import at.robert.shelly.client.RawShellyClient
+import at.robert.shelly.client.component.Shelly
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import io.github.shelly.client.RawShellyClient
-import io.github.shelly.client.component.Shelly
 
 class ShellyClient(
     ip: String,
