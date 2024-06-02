@@ -33,4 +33,4 @@ jobs:
         env:
           GPR_USER: ${{ github.actor }}
           GPR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ github.ref }}
+          GH_REF: ${{ github.ref }}

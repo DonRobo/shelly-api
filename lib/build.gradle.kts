@@ -45,11 +45,17 @@ publishing {
     }
     publications {
         create<MavenPublication>("maven") {
-            val envVarVersion = System.getenv("VERSION")
-            println("Env-Var-Version: $envVarVersion")
+            val ghRef = System.getenv("GH_REF")
+            val versionToUse = when {
+                ghRef == null -> project.version.toString()
+                ghRef.startsWith("refs/heads/") -> ghRef.removePrefix("refs/heads/") + "-SNAPSHOT"
+                ghRef.startsWith("refs/tags/") -> ghRef.removePrefix("refs/tags/")
+                else -> error("Unknown GH_REF: $ghRef")
+            }
+            println("versionToUse: $versionToUse")
             groupId = "at.robert.shelly-api"
             artifactId = "shelly-api"
-            version = envVarVersion ?: project.version.toString()
+            version = versionToUse
 
             from(components["java"])
         }
