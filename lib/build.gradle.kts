@@ -52,7 +52,6 @@ publishing {
                 ghRef.startsWith("refs/tags/") -> ghRef.removePrefix("refs/tags/")
                 else -> error("Unknown GH_REF: $ghRef")
             }
-            println("versionToUse: $versionToUse")
             groupId = "at.robert.shelly-api"
             artifactId = "shelly-api"
             version = versionToUse
