@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     alias(libs.plugins.jvm)
@@ -11,7 +9,6 @@ plugins {
 }
 
 version = "0.1.0"
-archivesName.set("shelly-api")
 
 repositories {
     mavenCentral()
@@ -30,6 +27,10 @@ java {
     }
     withJavadocJar()
     withSourcesJar()
+}
+
+tasks.withType<Jar> {
+    archiveBaseName = "shelly-api"
 }
 
 publishing {
