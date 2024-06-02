@@ -45,9 +45,11 @@ publishing {
     }
     publications {
         create<MavenPublication>("maven") {
+            val envVarVersion = System.getenv("VERSION")
+            println("Env-Var-Version: $envVarVersion")
             groupId = "at.robert.shelly-api"
             artifactId = "shelly-api"
-            version = System.getenv("VERSION") ?: project.version.toString()
+            version = envVarVersion ?: project.version.toString()
 
             from(components["java"])
         }
