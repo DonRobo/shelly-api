@@ -28,11 +28,34 @@ java {
 }
 
 publishing {
+    repositories {
+        val gprUser = (project.findProperty("gpr.user") as String? ?: System.getenv("GPR_USER"))?.ifBlank { null }
+        if (gprUser != null) {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/DonRobo/shelly-api")
+                credentials {
+                    username = gprUser
+                    password =
+                        (project.findProperty("gpr.key") as String? ?: System.getenv("GPR_TOKEN"))?.ifBlank { null }
+                            ?: error("No GitHub token set")
+                }
+            }
+        }
+    }
     publications {
         create<MavenPublication>("maven") {
+            val ghRef = System.getenv("GH_REF")
+            val versionToUse = when {
+                ghRef == null -> project.version.toString()
+                ghRef.startsWith("refs/heads/") -> ghRef.removePrefix("refs/heads/") + "-SNAPSHOT"
+                ghRef.startsWith("refs/tags/") -> ghRef.removePrefix("refs/tags/")
+                else -> error("Unknown GH_REF: $ghRef")
+            }
+            println("versionToUse: $versionToUse")
             groupId = "at.robert.shelly-api"
             artifactId = "shelly-api"
-            version = project.version.toString()
+            version = versionToUse
 
             from(components["java"])
         }
