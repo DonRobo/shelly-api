@@ -28,11 +28,26 @@ java {
 }
 
 publishing {
+    repositories {
+        val gprUser = (project.findProperty("gpr.user") as String? ?: System.getenv("GPR_USER"))?.ifBlank { null }
+        if (gprUser != null) {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/DonRobo/shelly-api")
+                credentials {
+                    username = gprUser
+                    password =
+                        (project.findProperty("gpr.key") as String? ?: System.getenv("GPR_TOKEN"))?.ifBlank { null }
+                            ?: error("No GitHub token set")
+                }
+            }
+        }
+    }
     publications {
         create<MavenPublication>("maven") {
             groupId = "at.robert.shelly-api"
             artifactId = "shelly-api"
-            version = project.version.toString()
+            version = System.getenv("VERSION") ?: project.version.toString()
 
             from(components["java"])
         }
