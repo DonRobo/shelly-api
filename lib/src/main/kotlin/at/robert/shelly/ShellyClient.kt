@@ -14,12 +14,23 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 class ShellyClient(
     ip: String,
 ) {
-
     private val client = RawShellyClient(ip)
     val objectMapper get() = client.objectMapper
 
     suspend fun getName(): String {
         return client.call(System.GetConfig)["device"]["name"].asText()
+    }
+
+    suspend fun setName(name: String) {
+        client.call(
+            System.SetConfig, System.SetConfigPayload(
+                config = System.ConfigPayload(
+                    device = System.DeviceConfigPayload(
+                        name = name,
+                    )
+                )
+            )
+        )
     }
 
     suspend fun getStatus(): ObjectNode {
@@ -78,10 +89,10 @@ class ShellyClient(
     }
 }
 
-
 suspend fun main() {
     val shelly = ShellyClient("192.168.178.48")
     // enable pretty print
     println(shelly.getName())
-    println(shelly.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(shelly.getComponents()))
+    shelly.setName("BadLueftung")
+    println(shelly.getName())
 }

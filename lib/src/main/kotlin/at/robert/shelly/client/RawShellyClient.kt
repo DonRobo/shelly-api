@@ -1,6 +1,5 @@
 package at.robert.shelly.client
 
-import at.robert.shelly.client.component.Shelly
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -12,7 +11,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
-import kotlin.time.measureTime
 
 class RawShellyClient(
     private val host: String,
@@ -64,7 +62,7 @@ class RawShellyClient(
         )
 
         if (response.error != null) {
-            TODO("Handle ${response.error}")
+            throw RuntimeException("Error: ${response.error}")
         } else {
             requireNotNull(response.result)
             return objectMapper.treeToValue(response.result, method.response)
@@ -78,22 +76,10 @@ class RawShellyClient(
         )
 
         if (response.error != null) {
-            TODO("Handle ${response.error}")
+            throw RuntimeException("Error: ${response.error}")
         } else {
             requireNotNull(response.result)
             return objectMapper.treeToValue(response.result, method.response)
         }
-    }
-}
-
-suspend fun main() {
-    val shelly = RawShellyClient("192.168.178.48")
-    measureTime {
-        val response = shelly.call(Shelly.GetStatus)
-        response.forEach {
-            println(it)
-        }
-    }.let {
-        println("Took $it")
     }
 }
