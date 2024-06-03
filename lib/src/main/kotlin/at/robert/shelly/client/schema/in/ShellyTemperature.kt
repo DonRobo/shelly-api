@@ -1,4 +1,4 @@
-package at.robert.shelly.client.schema
+package at.robert.shelly.client.schema.`in`
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

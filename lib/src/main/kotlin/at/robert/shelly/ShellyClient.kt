@@ -1,13 +1,15 @@
 package at.robert.shelly
 
 import at.robert.shelly.client.RawShellyClient
-import at.robert.shelly.client.component.Shelly
-import at.robert.shelly.client.component.Switch
-import at.robert.shelly.client.component.System
-import at.robert.shelly.client.component.Wifi
-import at.robert.shelly.client.schema.IdParam
-import at.robert.shelly.client.schema.ShellyInput
-import at.robert.shelly.client.schema.ShellySwitch
+import at.robert.shelly.client.component.*
+import at.robert.shelly.client.schema.`in`.ShellyInput
+import at.robert.shelly.client.schema.`in`.ShellyInputConfig
+import at.robert.shelly.client.schema.`in`.ShellyOutput
+import at.robert.shelly.client.schema.`in`.ShellySwitchConfig
+import at.robert.shelly.client.schema.out.ConfigPayload
+import at.robert.shelly.client.schema.out.DeviceConfigPayload
+import at.robert.shelly.client.schema.out.IdParam
+import at.robert.shelly.client.schema.out.SetConfigPayload
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 
@@ -23,9 +25,9 @@ class ShellyClient(
 
     suspend fun setName(name: String) {
         client.call(
-            System.SetConfig, System.SetConfigPayload(
-                config = System.ConfigPayload(
-                    device = System.DeviceConfigPayload(
+            System.SetConfig, SetConfigPayload(
+                config = ConfigPayload(
+                    device = DeviceConfigPayload(
                         name = name,
                     )
                 )
@@ -59,14 +61,14 @@ class ShellyClient(
         }.toList()
     }
 
-    suspend fun getSwitches(): List<ShellySwitch> {
+    suspend fun getSwitches(): List<ShellyOutput> {
         val status = client.call(Shelly.GetStatus)
 
         return status.fieldNames().asSequence().filter {
             it.startsWith("switch:")
         }.map {
             val switch = status[it]
-            client.objectMapper.treeToValue<ShellySwitch>(switch)
+            client.objectMapper.treeToValue<ShellyOutput>(switch)
         }.toList()
     }
 
@@ -87,12 +89,28 @@ class ShellyClient(
     suspend fun getComponents(): ObjectNode {
         return client.call(Shelly.GetComponents)
     }
+
+    suspend fun getInputConfig(inputId: Int): ShellyInputConfig {
+        return client.call(Input.GetConfig, IdParam(inputId))
+    }
+
+    suspend fun getSwitchConfig(inputId: Int): ShellySwitchConfig {
+        return client.call(Switch.GetConfig, IdParam(inputId))
+    }
 }
 
 suspend fun main() {
     val shelly = ShellyClient("192.168.178.48")
     // enable pretty print
     println(shelly.getName())
-    shelly.setName("BadLueftung")
-    println(shelly.getName())
+    val inputs = shelly.getInputs()
+    println(inputs)
+    inputs.forEach {
+        println("\t" + shelly.getInputConfig(it.id))
+    }
+    val outputs = shelly.getSwitches()
+    println(outputs)
+    outputs.forEach {
+        println("\t" + shelly.getSwitchConfig(it.id))
+    }
 }
