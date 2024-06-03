@@ -22,7 +22,7 @@ enum class ShellySwitchInMode {
     FOLLOW,
 
     @JsonProperty("flip")
-    FLIP,
+    TOGGLE,
 
     @JsonProperty("detached")
     DETACHED,
