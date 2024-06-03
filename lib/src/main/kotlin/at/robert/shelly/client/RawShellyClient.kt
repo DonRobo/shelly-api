@@ -1,6 +1,7 @@
 package at.robert.shelly.client
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -26,6 +27,7 @@ class RawShellyClient(
     }
     val objectMapper = jacksonObjectMapper().also {
         it.propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+        it.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
     private data class ShellyRequest(

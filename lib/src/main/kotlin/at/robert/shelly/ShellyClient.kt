@@ -154,12 +154,10 @@ suspend fun main() {
     println(inputs)
     inputs.forEach {
         println("\t" + shelly.getInputConfig(it.id))
-        shelly.setInputConfig(it.id, name = "Test${it.id}")
     }
     val outputs = shelly.getSwitches()
     println(outputs)
     outputs.forEach {
         println("\t" + shelly.getSwitchConfig(it.id))
-        shelly.setSwitchConfig(it.id, name = "Test${it.id}")
     }
 }
