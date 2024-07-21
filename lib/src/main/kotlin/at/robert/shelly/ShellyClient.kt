@@ -3,10 +3,7 @@ package at.robert.shelly
 import at.robert.shelly.client.RawShellyClient
 import at.robert.shelly.client.component.*
 import at.robert.shelly.client.schema.`in`.*
-import at.robert.shelly.client.schema.out.IdParam
-import at.robert.shelly.client.schema.out.InputConfigPayload
-import at.robert.shelly.client.schema.out.SwitchConfigPayload
-import at.robert.shelly.client.schema.out.SystemConfigPayload
+import at.robert.shelly.client.schema.out.*
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 
@@ -69,6 +66,17 @@ class ShellyClient(
         }.toList()
     }
 
+    suspend fun getCovers(): List<ShellyCover> {
+        val status = client.call(Shelly.GetStatus)
+
+        return status.fieldNames().asSequence().filter {
+            it.startsWith("cover:")
+        }.map {
+            val switch = status[it]
+            client.objectMapper.treeToValue<ShellyCover>(switch)
+        }.toList()
+    }
+
     suspend fun getMethods(): List<String> {
         return client.call(Shelly.ListMethods)["methods"].map {
             it.asText()
@@ -93,6 +101,10 @@ class ShellyClient(
 
     suspend fun getSwitchConfig(switchId: Int): ShellySwitchConfig {
         return client.call(Switch.GetConfig, IdParam(switchId))
+    }
+
+    suspend fun getCoverConfig(switchId: Int): ShellyCoverConfig {
+        return client.call(Cover.GetConfig, IdParam(switchId))
     }
 
     suspend fun setInputConfig(
@@ -144,20 +156,30 @@ class ShellyClient(
             )
         )
     }
-}
 
+    suspend fun setCoverConfig(
+        coverId: Int,
+        name: String? = null,
+        invertDirections: Boolean? = null,
+        inMode: ShellyCoverInMode? = null,
+    ) {
+        client.call(
+            Cover.SetConfig, CoverConfigPayload(
+                id = coverId,
+                config = CoverConfigPayload.Config(
+                    name = name,
+                    invertDirection = invertDirections,
+                    inMode = inMode,
+                )
+            )
+        )
+    }
+}
 suspend fun main() {
-    val shelly = ShellyClient("192.168.178.48")
-    // enable pretty print
+    val shelly = ShellyClient("192.168.1.172")
     println(shelly.getName())
     val inputs = shelly.getInputs()
-    println(inputs)
-    inputs.forEach {
-        println("\t" + shelly.getInputConfig(it.id))
-    }
-    val outputs = shelly.getSwitches()
-    println(outputs)
-    outputs.forEach {
-        println("\t" + shelly.getSwitchConfig(it.id))
-    }
+    inputs.forEach { println(it) }
+    val covers = shelly.getCovers()
+    covers.forEach { println(shelly.getCoverConfig(it.id)) }
 }
