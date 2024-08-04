@@ -91,6 +91,18 @@ class ShellyClient(
         return client.call(System.GetConfig)
     }
 
+    suspend fun setConfig(consumptionTypes: List<String>?) {
+        client.call(
+            System.SetConfig, SystemConfigPayload(
+                config = SystemConfigPayload.Config(
+                    uiData = SystemConfigPayload.Config.UiData(
+                        consumptionTypes = consumptionTypes,
+                    )
+                )
+            )
+        )
+    }
+
     suspend fun getComponents(): ObjectNode {
         return client.call(Shelly.GetComponents)
     }
@@ -175,11 +187,9 @@ class ShellyClient(
         )
     }
 }
+
 suspend fun main() {
-    val shelly = ShellyClient("192.168.1.172")
+    val shelly = ShellyClient("192.168.1.120")
     println(shelly.getName())
-    val inputs = shelly.getInputs()
-    inputs.forEach { println(it) }
-    val covers = shelly.getCovers()
-    covers.forEach { println(shelly.getCoverConfig(it.id)) }
+    println(shelly.getConfig())
 }
